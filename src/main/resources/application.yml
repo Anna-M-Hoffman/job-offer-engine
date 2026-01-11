@@ -1,0 +1,10 @@
+spring:
+  datasource:
+    url: jdbc:mysql://localhost:3306/joboffers?useSSL=false&serverTimezone=UTC
+    username: jobuser
+    password: password
+  jpa:
+    hibernate:
+      ddl-auto: update   # automatically creates tables from your entities
+    show-sql: true       # prints SQL queries in console
+
