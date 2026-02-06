@@ -25,6 +25,10 @@ public class JobSaver {
     private String company;
     private double salary;
     private double desiredSalary;
-    private String status;
     private double score; // calculated field
+
+    @Enumerated(EnumType.STRING)
+    @Column(nullable = false)
+    private JobStatus status;
+
 }

@@ -4,6 +4,7 @@ package org.hoffman.jobengine.service;
 import lombok.Data;
 import org.hoffman.jobengine.dto.JobSaverRequest;
 import org.hoffman.jobengine.model.JobSaver;
+import org.hoffman.jobengine.model.JobStatus;
 import org.hoffman.jobengine.repository.JobSaverRepository;
 import org.springframework.stereotype.Service;
 
@@ -16,25 +17,31 @@ public class JobSaverService {
 
     private final JobSaverRepository repository;
 
-    public JobSaver createOffer(UUID clientId, JobSaverRequest request) {
+    public JobSaver createJob(UUID clientId, JobSaverRequest request) {
 
         double salary = request.getSalary();
         double desiredSalary = request.getDesiredSalary();
 
         double score = salary / desiredSalary;
 
-        JobSaver offer = new JobSaver();
-        offer.setClientId(clientId);
-        offer.setJobTitle(request.getJobTitle());
-        offer.setLocation(request.getLocation());
-        offer.setSalary(request.getSalary());
-        offer.setDesiredSalary(request.getDesiredSalary());
-        offer.setScore(score);
+        JobSaver job = new JobSaver();
+        job.setClientId(clientId);
+        job.setJobTitle(request.getJobTitle());
+        job.setLocation(request.getLocation());
+        job.setSalary(request.getSalary());
+        job.setDesiredSalary(request.getDesiredSalary());
+        job.setScore(score);
 
-        return repository.save(offer);
+        if (request.getStatus() == null) {
+            job.setStatus(JobStatus.PENDING);
+        } else {
+            job.setStatus(request.getStatus());
+        }
+
+        return repository.save(job);
     }
 
-    public List<JobSaver> getOffers(UUID clientId) {
+    public List<JobSaver> getJob(UUID clientId) {
         return repository.findByClientId(clientId);
     }
 }

@@ -18,7 +18,7 @@ document.getElementById('submitBtn').addEventListener('click', function() {
     };
 
     // Send POST request to Spring Boot API
-    fetch('/api/jobs_saved', {
+    fetch('/api/jobs', {
         method: 'POST',
         headers: {
             'Content-Type': 'application/json',
@@ -53,7 +53,7 @@ document.getElementById('viewBtn').addEventListener('click', function() {
     const clientId = document.getElementById('clientId').value.trim();
     if (!clientId) return alert("Please enter a valid Client ID (UUID).");
 
-    fetch('/api/jobs_saved', {
+    fetch('/api/jobs', {
         method: 'GET',
         headers: {
             'X-Client-Id': clientId

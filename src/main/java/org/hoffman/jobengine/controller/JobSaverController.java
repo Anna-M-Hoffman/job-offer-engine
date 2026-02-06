@@ -10,7 +10,7 @@ import java.util.List;
 import java.util.UUID;
 
 @RestController
-@RequestMapping("/api/job-offers")
+@RequestMapping("/api/jobs")
 public class JobSaverController {
 
     private final JobSaverService service;
@@ -24,14 +24,14 @@ public class JobSaverController {
             @RequestHeader("X-Client-Id") UUID clientId,
             @RequestBody JobSaverRequest request) {
 
-        return service.createOffer(clientId, request);
+        return service.createJob(clientId, request);
     }
 
     @GetMapping
     public List<JobSaver> getOffers(
             @RequestHeader("X-Client-Id") UUID clientId) {
 
-        return service.getOffers(clientId);
+        return service.getJob(clientId);
     }
 }
 
