@@ -1,5 +1,29 @@
+// -------- UUID Cookie Setup --------
+function getCookie(name) {
+    return document.cookie.split('; ').find(row => row.startsWith(name + '='))?.split('=')[1];
+}
+
+function setCookie(name, value, days) {
+    let expires = "";
+    if (days) {
+        const date = new Date();
+        date.setTime(date.getTime() + days*24*60*60*1000);
+        expires = "; expires=" + date.toUTCString();
+    }
+    document.cookie = name + "=" + value + expires + "; path=/";
+}
+
+// Ensure clientId cookie exists
+let clientId = getCookie('clientId');
+if (!clientId) {
+    clientId = crypto.randomUUID(); // generates a UUID
+    setCookie('clientId', clientId, 365); // valid for 1 year
+}
+
+
+
+
 document.getElementById('submitBtn').addEventListener('click', function() {
-    const clientId = document.getElementById('clientId').value.trim();
     const jobTitle = document.getElementById('jobTitle').value.trim();
     const location = document.getElementById('location').value.trim();
     const company = document.getElementById('company').value.trim();
@@ -50,13 +74,10 @@ document.getElementById('submitBtn').addEventListener('click', function() {
 
 // View all offers for a client
 document.getElementById('viewBtn').addEventListener('click', function() {
-    const clientId = document.getElementById('clientId').value.trim();
-    if (!clientId) return alert("Please enter a valid Client ID (UUID).");
-
     fetch('/api/jobs', {
         method: 'GET',
         headers: {
-            'X-Client-Id': clientId
+            'X-Client-Id': clientId  // <-- use the same cookie
         }
     })
         .then(response => {
@@ -64,19 +85,31 @@ document.getElementById('viewBtn').addEventListener('click', function() {
             return response.json();
         })
         .then(data => {
-            if (data.length === 0) {
-                document.getElementById('allOffers').innerHTML = "No offers found for this client.";
+            if (!data.length) {
+                document.getElementById('allOffers').innerHTML = "No jobs found.";
                 return;
             }
 
-            let html = '<strong>All Jobs:</strong><br><ul>';
-            data.forEach(offer => {
-                html += `<li>ID: ${offer.id}, Title: ${offer.jobTitle}, Location: ${offer.location}, Company: ${offer.company}, Salary: $${offer.salary.toLocaleString()}, Salary Score: ${offer.score.toFixed(2)}</li>`;
+            let html = '<ul>';
+            data.forEach(job => {
+                html += `
+                <li>
+                    <strong>${job.jobTitle}</strong><br>
+                    Location: ${job.location}<br>
+                    Company: ${job.company ?? 'N/A'}<br>
+                    Salary: $${job.salary.toLocaleString()}<br>
+                    Desired Salary: $${job.desiredSalary.toLocaleString()}<br>
+                    Status: ${job.status.charAt(0) + job.status.slice(1).toLowerCase()}<br>
+                    Match: ${Math.round(job.score * 100)}%
+                </li><br>
+            `;
             });
             html += '</ul>';
+
             document.getElementById('allOffers').innerHTML = html;
         })
         .catch(err => {
-            document.getElementById('allOffers').innerHTML = `<span style="color:red;">Error: ${err.message}</span>`;
+            document.getElementById('allOffers').innerHTML =
+                `<span style="color:red;">${err.message}</span>`;
         });
 });
