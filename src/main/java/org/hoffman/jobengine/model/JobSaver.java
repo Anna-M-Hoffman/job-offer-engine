@@ -1,5 +1,9 @@
 package org.hoffman.jobengine.model;
 
+// Changing the UUID to a CHAR in the database instead of BLOB
+import org.hibernate.annotations.JdbcTypeCode;
+import org.hibernate.type.SqlTypes;
+
 import java.util.UUID;
 import lombok.Data;
 import lombok.NoArgsConstructor;
@@ -19,7 +23,10 @@ public class JobSaver {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
+    @Column(length = 36, nullable = false)
+    @JdbcTypeCode(SqlTypes.CHAR)  // store as CHAR(36) instead of BLOB
     private UUID clientId; // store the client identifier
+
     private String jobTitle;
     private String location;
     private String company;
