@@ -31,6 +31,7 @@ public class JobSaverService {
         job.setSalary(request.getSalary());
         job.setDesiredSalary(request.getDesiredSalary());
         job.setScore(score);
+        job.setCompany(request.getCompany());
 
         if (request.getStatus() == null) {
             job.setStatus(JobStatus.PENDING);
