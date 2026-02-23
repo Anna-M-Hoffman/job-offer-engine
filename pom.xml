@@ -77,6 +77,13 @@
             <scope>test</scope>
         </dependency>
 
+        <!-- Add H2 database -->
+        <dependency>
+            <groupId>com.h2database</groupId>
+            <artifactId>h2</artifactId>
+            <scope>test</scope>
+        </dependency>
+
         <!-- Add Spring Data JPA -->
         <dependency>
             <groupId>org.springframework.boot</groupId>
