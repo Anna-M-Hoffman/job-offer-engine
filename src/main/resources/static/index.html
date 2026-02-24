@@ -2,7 +2,6 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    <title>Job Organizer</title>
     <link rel="stylesheet" href="/css/style.css">
     <title>Job Organizer</title>
     <style>
@@ -47,7 +46,22 @@
 <div class="result" id="result"></div>
 
 <button id="viewBtn">View All Jobs</button>
-<div id="allJobs" class="result"></div>
+
+<table id="allJobs" class="result">
+    <thead>
+    <tr>
+        <th>Title</th>
+        <th>Company</th>
+        <th>Location</th>
+        <th>Salary</th>
+        <th>Desired</th>
+        <th>Status</th>
+        <th>Match</th>
+        <th>Action</th>
+    </tr>
+    </thead>
+    <tbody></tbody>
+</table>
 
 <script src="app.js"></script>
 </body>

@@ -4,6 +4,8 @@ package org.hoffman.jobengine.controller;
 import org.hoffman.jobengine.dto.JobSaverRequest;
 import org.hoffman.jobengine.model.JobSaver;
 import org.hoffman.jobengine.service.JobSaverService;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
@@ -34,6 +36,15 @@ public class JobSaverController {
             @RequestBody JobSaverRequest request) {
 
         return service.createJob(clientId, request);
+    }
+
+    @DeleteMapping("/{id}")
+    public ResponseEntity<Void> deleteJob(
+            @PathVariable Long id,
+            @RequestHeader("X-Client-Id") UUID clientId) {
+
+        service.deleteJob(id, clientId);
+        return ResponseEntity.ok().build();
     }
 }
 

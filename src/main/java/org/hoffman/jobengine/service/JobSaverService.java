@@ -45,4 +45,16 @@ public class JobSaverService {
     public List<JobSaver> getJob(UUID clientId) {
         return repository.findByClientId(clientId);
     }
+
+    public void deleteJob(Long id, UUID clientId) {
+
+        JobSaver job = repository.findById(id)
+                .orElseThrow(() -> new RuntimeException("Job not found"));
+
+        if (!job.getClientId().equals(clientId)) {
+            throw new RuntimeException("Unauthorized delete attempt");
+        }
+
+        repository.delete(job);
+    }
 }

@@ -1,4 +1,4 @@
-// -------- UUID Cookie Setup --------
+// -------- UUID Cookie Setup Functions --------
 function getCookie(name) {
     return document.cookie.split('; ').find(row => row.startsWith(name + '='))?.split('=')[1];
 }
@@ -11,6 +11,28 @@ function setCookie(name, value, days) {
         expires = "; expires=" + date.toUTCString();
     }
     document.cookie = name + "=" + value + expires + "; path=/";
+}
+
+// --------------Function to delete jobs -----------
+function deleteJob(id, button) {
+
+    const clientId = getCookie("clientId");
+
+    fetch(`/api/jobs/${id}`, {
+        method: "DELETE",
+        headers: {
+            "X-Client-Id": clientId
+        }
+    })
+        .then(response => {
+            if (!response.ok) throw new Error("Delete failed");
+
+            const row = button.closest("tr");
+            row.remove();
+        })
+        .catch(err => {
+            alert(err.message);
+        });
 }
 
 // Ensure clientId cookie exists
@@ -84,7 +106,7 @@ document.getElementById('viewBtn').addEventListener('click', function() {
         return;
     }
 
-    fetch(`/api/jobs?clientId=${clientId}`) // Get the cookie
+    fetch(`/api/jobs?clientId=${clientId}`)
         .then(response => {
             if (!response.ok) throw new Error("Request failed: " + response.status);
             return response.json();
@@ -95,21 +117,47 @@ document.getElementById('viewBtn').addEventListener('click', function() {
                 return;
             }
 
-            let html = '<ul>';
+            // Create table structure
+            let html = `
+                <table border="1" id="jobTable">
+                    <thead>
+                        <tr>
+                            <th>Title</th>
+                            <th>Company</th>
+                            <th>Location</th>
+                            <th>Salary</th>
+                            <th>Desired</th>
+                            <th>Status</th>
+                            <th>Match</th>
+                            <th>Action</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+            `;
+
             data.forEach(job => {
                 html += `
-                <li>
-                    <strong>${job.jobTitle}</strong><br>
-                    Location: ${job.location}<br>
-                    Company: ${job.company ?? 'N/A'}<br>
-                    Salary: $${job.salary.toLocaleString()}<br>
-                    Desired Salary: $${job.desiredSalary.toLocaleString()}<br>
-                    Status: ${job.status.charAt(0) + job.status.slice(1).toLowerCase()}<br>
-                    Match: ${Math.round(job.score * 100)}%
-                </li><br>
-            `;
+                    <tr>
+                        <td>${job.jobTitle}</td>
+                        <td>${job.company ?? 'N/A'}</td>
+                        <td>${job.location}</td>
+                        <td>$${job.salary.toLocaleString()}</td>
+                        <td>$${job.desiredSalary.toLocaleString()}</td>
+                        <td>${job.status}</td>
+                        <td>${Math.round(job.score * 100)}%</td>
+                        <td>
+                            <button onclick="deleteJob(${job.id}, this)">
+                                Delete
+                            </button>
+                        </td>
+                    </tr>
+                `;
             });
-            html += '</ul>';
+
+            html += `
+                    </tbody>
+                </table>
+            `;
 
             document.getElementById('allJobs').innerHTML = html;
         })
@@ -118,4 +166,3 @@ document.getElementById('viewBtn').addEventListener('click', function() {
                 `<span style="color:red;">${err.message}</span>`;
         });
 });
-
