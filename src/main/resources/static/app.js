@@ -49,19 +49,36 @@ document.getElementById('submitBtn').addEventListener('click', function() {
     const jobTitle = document.getElementById('jobTitle').value.trim();
     const location = document.getElementById('location').value.trim();
     const company = document.getElementById('company').value.trim();
-    const salary = parseFloat(document.getElementById('salary').value);
-    const desiredSalary = parseFloat(document.getElementById('desiredSalary').value);
+
+    const salaryInput = document.getElementById('salary').value.trim();
+    const desiredSalaryInput = document.getElementById('desiredSalary').value.trim();
+
+    const salary = salaryInput ? parseFloat(salaryInput) : null;
+    const desiredSalary = desiredSalaryInput ? parseFloat(desiredSalaryInput) : null;
+
     const status = document.getElementById('status').value.trim();
+    const resultDiv = document.getElementById('result');
+
+    if (!jobTitle) {
+        resultDiv.innerHTML = `<span class="error-message">Job title is required.</span>`;
+        return;
+    }
+
+    if (!status) {
+        resultDiv.innerHTML = `<span class="error-message">Status is required.</span>`;
+        return;
+    }
+
 
     // Build the request payload
-    const requestData = {
-        jobTitle,
-        location,
-        company,
-        salary,
-        desiredSalary,
-        status
-    };
+    const requestData = { jobTitle }; // always include jobTitle
+
+    if (location) requestData.location = location;
+    if (company) requestData.company = company;
+    if (!isNaN(salary)) requestData.salary = salary;
+    if (!isNaN(desiredSalary)) requestData.desiredSalary = desiredSalary;
+    if (status) requestData.status = status;
+
 
     // Send POST request to Spring Boot API
     fetch('/api/jobs', {
@@ -72,25 +89,29 @@ document.getElementById('submitBtn').addEventListener('click', function() {
         },
         body: JSON.stringify(requestData)
     })
-        .then(response => {
-            if (!response.ok) throw new Error("Request failed: " + response.status);
-            return response.json();
-        })
         .then(data => {
-            document.getElementById('result').innerHTML = `
-            <strong>Saved Jobs:</strong><br>
-            ID: ${data.id}<br>
-            Client ID: ${data.clientId}<br>
-            Job Title: ${data.jobTitle}<br>
-            Location: ${data.location}<br>
-            Job Salary: $${data.salary.toLocaleString()}<br>
-            Desired Salary: $${data.desiredSalary.toLocaleString()}<br>
-            Status: ${data.status}<br>
-            Salary Score: ${data.score.toFixed(2)}
-        `;
+            const resultDiv = document.getElementById('result');
+
+            resultDiv.innerHTML = `
+        <span class="success-message">
+            Job successfully submitted!
+        </span>
+    `;
+
+            // Optional: clear form fields after success
+            document.getElementById('jobTitle').value = "";
+            document.getElementById('location').value = "";
+            document.getElementById('company').value = "";
+            document.getElementById('salary').value = "";
+            document.getElementById('desiredSalary').value = "";
+            document.getElementById('status').value = "PENDING";
         })
         .catch(err => {
-            document.getElementById('result').innerHTML = `<span style="color:red;">Error: ${err.message}</span>`;
+            document.getElementById('result').innerHTML = `
+        <span class="error-message">
+            Submission failed. ${err.message}
+        </span>
+    `;
         });
 });
 
@@ -108,8 +129,11 @@ document.getElementById('viewBtn').addEventListener('click', function() {
 
     fetch(`/api/jobs?clientId=${clientId}`)
         .then(response => {
-            if (!response.ok) throw new Error("Request failed: " + response.status);
-            return response.json();
+            if (!response.ok) {
+                return response.text().then(text => {
+                    throw new Error(text);
+                });
+            }            return response.json();
         })
         .then(data => {
             if (!data.length) {
@@ -140,13 +164,13 @@ document.getElementById('viewBtn').addEventListener('click', function() {
                     <tr>
                         <td>${job.jobTitle}</td>
                         <td>${job.company ?? 'N/A'}</td>
-                        <td>${job.location}</td>
-                        <td>$${job.salary.toLocaleString()}</td>
-                        <td>$${job.desiredSalary.toLocaleString()}</td>
-                        <td>${job.status}</td>
-                        <td>${Math.round(job.score * 100)}%</td>
+                        <td>${job.location ?? 'N/A'}</td>
+                        <td>${job.salary != null ? `$${job.salary.toLocaleString()}` : 'N/A'}</td>
+                        <td>${job.desiredSalary != null ? `$${job.desiredSalary.toLocaleString()}` : 'N/A'}</td>
+                        <td>${job.status ?? 'N/A'}</td>
+                        <td>${job.score != null ? `${Math.round(job.score * 100)}%` : 'N/A'}</td>
                         <td>
-                            <button onclick="deleteJob(${job.id}, this)">
+                            <button class="delete-btn" onclick="deleteJob(${job.id}, this)">
                                 Delete
                             </button>
                         </td>
