@@ -116,11 +116,15 @@ document.getElementById("jobForm").addEventListener("submit", function(e) {
             if (resultDiv) resultDiv.innerHTML = "";
         })
         .catch(err => {
-            resultDiv.innerHTML = `
-            <span class="error-message">
-                Submission failed. ${err.message}
-            </span>
-        `;
+            if (resultDiv) {
+                resultDiv.innerHTML = `
+        <span class="error-message">
+            Submission failed. ${err.message}
+        </span>
+       `;
+            } else {
+                console.error("Submission failed:", err.message);
+            }
         });
 });
 
