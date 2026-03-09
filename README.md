@@ -1,6 +1,21 @@
 # Job Organizer
-
 **Job Organizer** is a web application designed to help users track and manage job applications efficiently. Users can add, remove, and view jobs, with persistence maintained per device.
+
+## Link 
+**https://job-organizer-api.onrender.com/**
+
+<p align="center"><b>Frontend</b></p>
+
+<p align="center">
+  <img src="images/frontend.PNG" width="1500" alt="Frontend View">
+</p>
+
+<p align="center"><b>Backend</b></p>
+
+<p align="center">
+  <img src="images/database.PNG" width="1500" alt="Database View">
+</p>
+
 
 ## Features
 
@@ -29,7 +44,3 @@
 
 - Each device has its own data set; clearing browser data may reset the UUID and associated jobs.
 - Deployed version on Render requires the backend to be running for live access.
-
-## Photos
-![Frontend View](job-organizer/images/frontend.png)
-![Database View](job-organizer/images/database.png)
