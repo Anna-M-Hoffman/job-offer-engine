@@ -31,5 +31,5 @@
 - Deployed version on Render requires the backend to be running for live access.
 
 ## Photos
-![Frontend View](images/frontend.png)
-![Database View](images/database.png)
+![Frontend View](job-organizer/images/frontend.png)
+![Database View](job-organizer/images/database.png)
